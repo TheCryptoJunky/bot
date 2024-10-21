@@ -1,0 +1,74 @@
+# ============================================================
+# Exchange API Keys (Replace these with actual credentials)
+# ============================================================
+API_KEY_1=your-api-key-1             # Binance API key
+SECRET_KEY_1=your-secret-key-1       # Binance secret key
+
+API_KEY_2=your-api-key-2             # Coinbase API key
+SECRET_KEY_2=your-secret-key-2       # Coinbase secret key
+
+API_KEY_3=your-api-key-3             # Uniswap API key
+SECRET_KEY_3=your-secret-key-3       # Uniswap secret key
+
+# ============================================================
+# AI Model Paths (for Trained Models)
+# ============================================================
+MODEL_PATH=src/ai/models/trained_lstm_model.h5   # Path to your trained LSTM model
+
+# ============================================================
+# Mempool and Blockchain Analytics API Keys
+# ============================================================
+MEMPOOL_API_KEY=your-mempool-api-key         # API key for Mempool analytics
+GLASSNODE_API_KEY=your-glassnode-api-key     # API key for Glassnode blockchain analytics
+
+# ============================================================
+# Sentiment Analysis Data Sources (Optional)
+# ============================================================
+SENTIMENT_SOURCE_1=your-news-source              # API or source for news data
+SENTIMENT_SOURCE_2=your-social-media-source      # API or source for social media data
+
+# ============================================================
+# Telegram Bot Credentials (For Trade Notifications)
+# ============================================================
+TELEGRAM_BOT_TOKEN=your-telegram-bot-token   # Your Telegram bot token
+TELEGRAM_CHAT_ID=your-telegram-chat-id       # Your Telegram chat ID
+
+# ============================================================
+# Twilio Credentials (For SMS Alerts)
+# ============================================================
+TWILIO_ACCOUNT_SID=your-twilio-account-sid   # Twilio account SID
+TWILIO_AUTH_TOKEN=your-twilio-auth-token     # Twilio auth token
+TWILIO_FROM_NUMBER=your-twilio-phone-number  # Twilio phone number to send SMS
+TWILIO_TO_NUMBER=your-phone-number           # Your personal phone number for alerts
+
+# ============================================================
+# Email Notifications (For Trade Alerts)
+# ============================================================
+EMAIL_USER=your-email-address                # Sender email address
+EMAIL_PASS=your-email-password               # Sender email password
+NOTIFICATION_EMAIL=recipient-email           # Recipient email address for notifications
+
+# ============================================================
+# Configurable Settings for Trading Bot
+# ============================================================
+ERROR_THRESHOLD=5              # Maximum errors allowed before stopping the bot
+RETRY_ATTEMPTS=3               # Number of retry attempts before failure
+FEE_RATE=0.001                 # Trading fee rate (e.g., 0.1%)
+TRADE_SYMBOLS=BTC/USDT,ETH/USDT # Symbols to trade (comma-separated)
+
+# ============================================================
+# MySQL Database Configuration
+# ============================================================
+MYSQL_USER=my_user
+MYSQL_PASSWORD=my_password
+MYSQL_DATABASE=my_database              # The database used by the project
+MYSQL_HOST=localhost
+MYSQL_ROOT_PASSWORD=my_root_password    
+MYSQL_PORT=3306                         # MySQL port (default is 3306)
+
+# ============================================================
+# SSL/TLS for MySQL (Optional for Secure Connections)
+# ============================================================
+MYSQL_SSL_CA=/path/to/ca-cert.pem           # Path to the SSL CA certificate (optional)
+MYSQL_SSL_CERT=/path/to/client-cert.pem     # Path to the SSL client certificate (optional)
+MYSQL_SSL_KEY=/path/to/client-key.pem       # Path to the SSL client key (optional)

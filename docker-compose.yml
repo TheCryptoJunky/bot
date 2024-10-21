@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  trading-bot:
+    image: your-docker-image  # Replace with your actual Docker image
+    container_name: trading_bot_container
+    environment:
+      - MYSQL_HOST=db  # Assuming a linked MySQL service
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=password  # Use secret management here for real deployments
+      - MYSQL_DB=trading
+    volumes:
+      - ./src:/usr/src/app  # Mount local source code for live development
+    ports:
+      - "8000:8000"  # Expose the web application port
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: password  # Secure this password
+      MYSQL_DATABASE: trading
+    ports:
+      - "3306:3306"  # MySQL database port
+    volumes:
+      - db-data:/var/lib/mysql  # Persist MySQL data
+
+volumes:
+  db-data:
