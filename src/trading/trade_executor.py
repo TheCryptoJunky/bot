@@ -1,52 +1,27 @@
-# File: /src/trading/trade_executor.py
-import logging
-from datetime import datetime
+# src/trading/trade_executor.py
 
 class TradeExecutor:
-    def __init__(self, db_connection):
+    """
+    Executes buy and sell trades based on the signals provided by trading strategies.
+    """
+    def __init__(self, trading_api):
         """
-        Initializes the TradeExecutor with a given database connection.
-        
-        :param db_connection: Active MySQL connection instance.
+        Initialize the trade executor with a trading API.
+        :param trading_api: An API object for executing trades on exchanges.
         """
-        self.db_connection = db_connection
-        self.logger = logging.getLogger(__name__)
+        self.trading_api = trading_api
 
-    def execute_trade(self, bot_name, trade_details):
+    def execute_trade(self, asset, action, amount):
         """
-        Executes a trade and logs the results in the database.
-        
-        :param bot_name: The name of the bot executing the trade.
-        :param trade_details: Dictionary containing trade details (symbol, amount, price).
-        :return: None
+        Execute a trade based on the given action.
+        :param asset: The asset to trade (e.g., 'BTC').
+        :param action: 'buy' or 'sell'.
+        :param amount: Amount of the asset to trade.
+        :return: The result of the trade execution.
         """
-        try:
-            # Example: Send the trade order to the exchange (to be implemented with ccxt or other libraries)
-            self.logger.info(f"Executing trade for {bot_name}: {trade_details}")
-            self.log_trade(bot_name, trade_details)
-        except Exception as e:
-            self.logger.error(f"Error executing trade for {bot_name}: {str(e)}")
-
-    def log_trade(self, bot_name, trade_details):
-        """
-        Logs the trade details to the MySQL database.
-
-        :param bot_name: The name of the bot that executed the trade.
-        :param trade_details: Dictionary containing trade details (symbol, amount, price).
-        :return: None
-        """
-        cursor = self.db_connection.cursor()
-        cursor.execute(
-            """
-            INSERT INTO trades (bot_name, symbol, amount, price, executed_at) 
-            VALUES (%s, %s, %s, %s, %s)
-            """, 
-            (
-                bot_name, 
-                trade_details['symbol'], 
-                trade_details['amount'], 
-                trade_details['price'], 
-                datetime.now()
-            )
-        )
-        self.db_connection.commit()
+        if action == 'buy':
+            return self.trading_api.buy(asset, amount)
+        elif action == 'sell':
+            return self.trading_api.sell(asset, amount)
+        else:
+            raise ValueError(f"Unknown action: {action}")

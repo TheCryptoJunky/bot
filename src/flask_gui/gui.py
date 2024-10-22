@@ -1,4 +1,4 @@
-# File: /src/gui/gui.py
+# File: /src/flask_gui/gui.py
 
 import tkinter as tk
 from tkinter import messagebox
@@ -6,7 +6,7 @@ import logging
 from src.database.database_manager import DatabaseManager
 from centralized_logger import CentralizedLogger
 from bot_manager import BotManager  # To interact with bots and view their status
-from error_handler import ErrorHandler  # To view errors in real-time
+from src.utils.error_handler import ErrorHandler  # To view errors in real-time
 
 # Initialize logger and centralized logging
 logger = logging.getLogger(__name__)

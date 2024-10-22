@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify
-from arbitrage_manager import ArbitrageManager  # Assuming a manager to handle the bot instances
+from src.managers.arbitrage_manager import ArbitrageManager  # Assuming a manager to handle the bot instances
 
 app = Flask(__name__)
 manager = ArbitrageManager()  # Instantiate a manager to control the bots

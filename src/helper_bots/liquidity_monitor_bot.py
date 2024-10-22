@@ -1,5 +1,5 @@
 from ai.rl_agent import RLTradingAgent
-from ai.sentiment_analysis import SentimentAnalysisModel
+from ai.models.sentiment_analysis import SentimentAnalysisModel
 from centralized_logger import CentralizedLogger
 from market_data import MarketDataAPI
 from src.safety.safety_manager import SafetyManager
