@@ -3,9 +3,9 @@ import logging
 import config
 import goal_manager
 import learning_agent
-import wallet
-import wallet_manager
-import wallet_swarm
+import src.rl_agent.wallet
+import src.rl_agent.wallet_manager as wallet_manager
+import src.rl_agent.wallet_swarm as wallet_swarm
 import trade
 import gui
 
