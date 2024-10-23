@@ -1,116 +1,89 @@
-# wallet_swarm.py
-from .manual_overrides import ManualOverrides
-from .goal_adjuster import GoalAdjuster
-from typing import List, Dict
 import os
+import json
+from web3 import Web3
+from datetime import datetime
+from typing import List, Dict
+
+# Assuming MEVStrategy is defined in a module named mev_strategy
+from mev_strategy import MEVStrategy
 
 class WalletSwarm:
-    """
-    A class to manage a swarm of wallets.
-    """
-    def __init__(self, wallet_dir: str, manual_overrides: ManualOverrides, goal_adjuster: GoalAdjuster):
-        """
-        Initialize the wallet swarm.
+    def __init__(self, mev_strategy, num_wallets: int, initial_balance: float):
+        self.mev_strategy = mev_strategy
+        self.num_wallets = num_wallets
+        self.initial_balance = initial_balance
+        self.wallets = []
+        self.assets = {}
 
-        Args:
-            wallet_dir (str): The directory where wallets are stored.
-            manual_overrides (ManualOverrides): An instance of ManualOverrides.
-            goal_adjuster (GoalAdjuster): An instance of GoalAdjuster.
-        """
-        self.wallet_dir = wallet_dir
-        self.manual_overrides = manual_overrides
-        self.goal_adjuster = goal_adjuster
-        self.wallets = {}
+    def create_wallets(self):
+        for i in range(self.num_wallets):
+            wallet = self.mev_strategy.create_wallet()
+            self.wallets.append(wallet)
 
-    def allocate_wallets(self, num_wallets: int) -> List[str]:
-        """
-        Allocate wallets based on the goal adjuster's strategy.
+    def allocate_assets(self):
+        for wallet in self.wallets:
+            assets = self.mev_strategy.allocate_assets(wallet, self.initial_balance)
+            self.assets[wallet.address] = assets
 
-        Args:
-            num_wallets (int): The number of wallets to allocate.
+    def calculate_total_net_value(self) -> float:
+        total_net_value = 0
+        for wallet in self.wallets:
+            total_net_value += self.mev_strategy.calculate_net_value(wallet)
+        return total_net_value
 
-        Returns:
-            List[str]: A list of allocated wallet names.
-        """
-        wallets = self.goal_adjuster.allocate_wallets(num_wallets)
-        for wallet in wallets:
-            self.create_wallet(wallet)
-        return wallets
+    def get_total_assets(self) -> List[str]:
+        total_assets = []
+        for assets in self.assets.values():
+            total_assets.extend(assets)
+        return list(set(total_assets))
 
-    def manage_wallets(self) -> None:
-        """
-        Manage wallets based on manual overrides and the goal adjuster's strategy.
-        """
-        self.manual_overrides.apply_overrides(self.wallets)
-        self.goal_adjuster.adjust_wallets(self.wallets)
+    def get_asset_values(self) -> Dict[str, float]:
+        asset_values = {}
+        for wallet in self.wallets:
+            assets = self.assets[wallet.address]
+            for asset in assets:
+                value = self.mev_strategy.get_asset_value(wallet, asset)
+                if asset in asset_values:
+                    asset_values[asset] += value
+                else:
+                    asset_values[asset] = value
+        return asset_values
 
-    def create_wallet(self, wallet_name: str) -> None:
-        """
-        Create a new wallet.
+    def get_wallet_addresses(self) -> List[str]:
+        return [wallet.address for wallet in self.wallets]
 
-        Args:
-            wallet_name (str): The name of the wallet to create.
-        """
-        wallet_path = os.path.join(self.wallet_dir, wallet_name)
-        with open(wallet_path, 'w') as f:
-            f.write('')
-        self.wallets[wallet_name] = wallet_path
+    def get_wallet_info(self, wallet_address: str) -> Dict[str, str]:
+        wallet = next((w for w in self.wallets if w.address == wallet_address), None)
+        if wallet:
+            assets = self.assets[wallet_address]
+            total_value = self.mev_strategy.calculate_net_value(wallet)
+            asset_values = {asset: self.mev_strategy.get_asset_value(wallet, asset) for asset in assets}
+            return {
+                "address": wallet_address,
+                "total_value": str(total_value),
+                "assets": assets,
+                "asset_values": asset_values
+            }
+        else:
+            return {}
 
-    def delete_wallet(self, wallet_name: str) -> None:
-        """
-        Delete a wallet.
+    def display_swarm_info(self):
+        print("Total Net Value:", self.calculate_total_net_value())
+        print("Total Assets:", self.get_total_assets())
+        print("Asset Values:", self.get_asset_values())
+        print("Wallet Addresses:", self.get_wallet_addresses())
+        for wallet_address in self.get_wallet_addresses():
+            wallet_info = self.get_wallet_info(wallet_address)
+            print("Wallet", wallet_address, "Info:")
+            print("Total Value:", wallet_info["total_value"])
+            print("Assets:", wallet_info["assets"])
+            print("Asset Values:", wallet_info["asset_values"])
 
-        Args:
-            wallet_name (str): The name of the wallet to delete.
-        """
-        if wallet_name in self.wallets:
-            os.remove(self.wallets[wallet_name])
-            del self.wallets[wallet_name]
-
-    def get_wallet(self, wallet_name: str) -> str:
-        """
-        Get a wallet's path.
-
-        Args:
-            wallet_name (str): The name of the wallet to get.
-
-        Returns:
-            str: The path of the wallet.
-        """
-        return self.wallets.get(wallet_name)
-
-    def update_wallet(self, wallet_name: str, new_name: str) -> None:
-        """
-        Update a wallet's name.
-
-        Args:
-            wallet_name (str): The current name of the wallet.
-            new_name (str): The new name of the wallet.
-        """
-        if wallet_name in self.wallets:
-            old_path = self.wallets[wallet_name]
-            new_path = os.path.join(self.wallet_dir, new_name)
-            os.rename(old_path, new_path)
-            self.wallets[new_name] = new_path
-            del self.wallets[wallet_name]
-
-    def save_wallet(self, wallet_name: str) -> None:
-        """
-        Save a wallet's state.
-
-        Args:
-            wallet_name (str): The name of the wallet to save.
-        """
-        # TO DO: implement wallet state saving
-
-    def remove_wallet_file(self, wallet_name: str) -> None:
-        """
-        Remove a wallet's file.
-
-        Args:
-            wallet_name (str): The name of the wallet to remove.
-        """
-        if wallet_name in self.wallets:
-            os.remove(self.wallets[wallet_name])
-
-# File path: /path/to/project/wallet_swarm.py
+if __name__ == "__main__":
+    mev_strategy = MEVStrategy()  # Initialize MEV strategy
+    num_wallets = 10
+    initial_balance = 1000.0
+    swarm = WalletSwarm(mev_strategy, num_wallets, initial_balance)
+    swarm.create_wallets()
+    swarm.allocate_assets()
+    swarm.display_swarm_info()
